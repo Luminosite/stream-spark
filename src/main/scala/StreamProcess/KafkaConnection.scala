@@ -6,13 +6,13 @@ import org.apache.kafka.clients.producer.{ProducerRecord, KafkaProducer, Produce
 /**
   * Created by kufu on 16-1-26.
   */
-class KafkaConnection(producerList:List[String], topic:String) {
+class KafkaConnection(brokerList:List[String], topic:String) {
 
   var producer:Producer[String, String] = {
 
     val props = new util.Properties()
     val list:util.ArrayList[String] = new util.ArrayList[String]()
-    producerList.foreach(location=>list.add(location))
+    brokerList.foreach(location=>list.add(location))
     props.put("bootstrap.servers", list)
 
     //details configuration
