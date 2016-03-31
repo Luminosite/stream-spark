@@ -56,6 +56,7 @@ class DirectConnectionToKafka {
     * @return It's broker.Id, broker.host, broker.port, partition.Id in tuple4
     */
   def findLeader(seedBrokers:List[String], port:Int, topic:String):List[(Int, String, Int, Int)]={
+    //the tuple4 is (broker.id, broker.host, broker.port, partitionId)
     var retMetaData = new ListBuffer[(Int, String, Int, Int)]()
     var partitionId: Int = -1
     val checkSet:mutable.HashSet[String] = new mutable.HashSet[String]()

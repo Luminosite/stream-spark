@@ -2,7 +2,7 @@ name:="My Net Stream Testing"
 version:="1.0"
 scalaVersion:="2.10.4"
 val hbaseVersion = "0.98.4-hadoop2"
-libraryDependencies+="org.apache.spark"%"spark-streaming_2.10"%"1.5.2"
+libraryDependencies+="org.apache.spark"%"spark-streaming_2.10"%"1.5.2" % Provided
 libraryDependencies += "org.apache.hbase" % "hbase-client" % hbaseVersion
 libraryDependencies += "org.apache.hbase" % "hbase-common" % hbaseVersion
 libraryDependencies += "org.apache.hbase" % "hbase-server" % hbaseVersion
@@ -26,3 +26,24 @@ resolvers ++= Seq(
   "PayPal Nexus snapshots" at "http://nexus.paypal.com/nexus/content/repositories/snapshots",
   "Artima Maven Repository" at "http://repo.artima.com/releases"
 )
+
+mainClass in (Compile, run) := Some("StreamProcess.tools.hbaseCleaner.HBaseTableCleaner")
+
+test in assembly := {}
+
+assemblyJarName in assembly := "AutoCleaner.jar"
+
+assemblyMergeStrategy in assembly := {
+//  case "org/apache/spark/unused/UnusedStubClass.class" => MergeStrategy.last
+  case PathList("org", "apache", "spark", _*) => MergeStrategy.last
+  case PathList("org", "apache", "commons", _*) => MergeStrategy.last
+  case PathList("org", "apache", "jasper", _*) => MergeStrategy.last
+  case PathList("org", "apache", "hadoop", _*) => MergeStrategy.last
+  case PathList("com", "google", "common", _*) => MergeStrategy.last
+  case PathList("javax", "servlet", _*) => MergeStrategy.last
+  case PathList("com", "esotericsoftware", "minlog", _*) => MergeStrategy.last
+  case x => val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
+
+mainClass in assembly := Some("StreamProcess.tools.hbaseCleaner.HBaseTableCleaner")

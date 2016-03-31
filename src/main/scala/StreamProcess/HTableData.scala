@@ -2,7 +2,7 @@ package StreamProcess
 
 import java.io.IOException
 
-import org.apache.hadoop.hbase.client.{Get, Put, Result}
+import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.util.Bytes
 
 import scala.collection.mutable.ListBuffer
@@ -181,6 +181,18 @@ case class HTableData(row: Array[Byte],
 }
 
 object HTableData{
+  def getDeletes(list: List[HTableData]): List[Delete] = {
+    val delBuffer = new ListBuffer[Delete]
+
+    list.foreach(data =>{
+      val del = new Delete(data.row)
+      del.deleteColumns(data.family, data.qualifier)
+      delBuffer+=del
+    })
+
+    delBuffer.toList
+  }
+
   def getHTableData(result: Result): List[HTableData] = {
     val retData = new ListBuffer[HTableData]
     val row: Array[Byte] = result.getRow
@@ -197,5 +209,16 @@ object HTableData{
       })
     })
     retData.toList
+  }
+
+  def getHTableData(result:ResultScanner): List[HTableData] ={
+    val resultIterator = result.iterator()
+    val resultList = new ListBuffer[HTableData]
+    while(resultIterator.hasNext){
+      val r = resultIterator.next()
+      val list = getHTableData(r)
+      resultList++=list
+    }
+    resultList.toList
   }
 }

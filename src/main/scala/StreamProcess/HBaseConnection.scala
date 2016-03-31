@@ -1,12 +1,13 @@
 package StreamProcess
 
 import org.apache.hadoop.hbase.{HColumnDescriptor, TableName, HTableDescriptor, HBaseConfiguration}
-import org.apache.hadoop.hbase.client.{ResultScanner, Scan, HTable, HBaseAdmin}
+import org.apache.hadoop.hbase.client._
 
 /**
   * Created by kufu on 16-1-25.
   */
-class HBaseConnection(tableName:String, families:Array[String]) {
+class HBaseConnection(tableName:String, families:List[String]) {
+
   val conf = HBaseConfiguration.create()
   var table:HTable = null
 
@@ -44,6 +45,12 @@ class HBaseConnection(tableName:String, families:Array[String]) {
   def scan(scan:Scan): ResultScanner ={
     checkTable()
     table.getScanner(scan)
+  }
+
+  def deleteList(dels: List[Delete]) = {
+    val list = new java.util.LinkedList[Delete]()
+    dels.foreach(list.add)
+    table.delete(list)
   }
 
   def close(): Unit ={
